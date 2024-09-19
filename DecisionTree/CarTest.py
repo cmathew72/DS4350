@@ -8,6 +8,7 @@ test_data = pd.read_csv('test.csv', header=None, names=['buying', 'maint', 'door
 # Check the data
 # print(train_data.head(), test_data.head())
 
+# Question 2.A
 def entropy(data):
     labels = data['label'] # Get all labels
     label_counts = labels.value_counts() # Count how many of each label
@@ -33,12 +34,12 @@ def majority_error(data):
 
 def gini_index(data):
     labels = data['label']
-    label_counts = labels.value_counts() # Count how many of each label
+    label_counts = labels.value_counts() # Tracks counts how many of each label
     gi_value = 1 - sum((count / len(data)) ** 2 for count in label_counts)
     return gi_value
 
 def best_attribute(data, criteria='information_gain'):
-    attributes = ['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety', 'label']
+    attributes = ['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety'] # Non label attributes
     best_attr = None
     best_value = float('-inf')
 
@@ -66,27 +67,37 @@ class Node:
 def build_tree(data, max_depth=None, depth=0, criteria='information_gain'):
     labels = data['label']
 
-    if len(labels.unique()) == 1: # If all labels are the same
+    # If all labels are the same
+    if len(labels.unique()) == 1:
         return Node(label=labels.iloc[0])
-    if max_depth is not None and depth >= max_depth: # If tree reaches max depth or greater
-        return Node(label=labels.iloc[0]) # Return majority label
+    # If tree reaches max depth or greater, return majority label
+    if max_depth is not None and depth >= max_depth:
+        return Node(label=labels.mode()[0])
+    # Split on best attribute
     best_attr = best_attribute(data, criteria)
+    # If no attribute, return majority label
     if best_attr is None:
-        return Node(label=labels.iloc[0]) # Majority label
+        return Node(label=labels.mode()[0])
 
     root = Node(attribute=best_attr)
 
     for value in data[best_attr].unique():
-        sub_data = data[data[best_attr] == value]
-        child = build_tree(sub_data, max_depth, depth+1, criteria) # Recursively split the data util max depth is reached
-        root.children[value] = child
+        subset = data[data[best_attr] == value]
+        if len(subset) == 0:
+            # If no more data, return majority label
+            root.children[value] = Node(label=labels.mode()[0])
+        else:
+            root.children[value] = build_tree(subset, max_depth, depth+1, criteria) # Recursively split the data util max depth is reached
 
     return root
 
 def predict(tree, instance):
-    if tree.label is not None: # If is a leaf node, return
+    # If is a leaf node, return
+    if tree.label is not None:
         return tree.label
     attr_value = instance[tree.attribute]
+    if attr_value not in tree.children:
+        return None
     return predict(tree.children[attr_value], instance)
 
 # Test the new tree
@@ -96,7 +107,25 @@ def evaluate(tree, test_data):
         if predict(tree, row) == row['label']:
             correct += 1
     proficiency = correct / len(test_data)
-    return proficiency
+    # Return error
+    return 1 - proficiency
 
 # Test predictions
 # print(evaluate(build_tree(train_data), test_data))
+
+# Question 2.B
+# Depth from 1 to 6
+depth_range = range(1, 7)
+criteria_list = ['information_gain', 'majority_error', 'gini_index']
+results = []
+
+for criteria in criteria_list:
+    for depth in depth_range:
+        tree = build_tree(train_data, max_depth=depth, criteria=criteria)
+        train_error = evaluate(tree, train_data)
+        test_error = evaluate(tree, test_data)
+        results.append([criteria, depth, train_error, test_error])
+
+# Display results
+results_df = pd.DataFrame(results, columns=['criteria', 'depth', 'train_error', 'test_error'])
+print(results_df)
