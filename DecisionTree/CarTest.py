@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 
 # Load data with column headers: buying,maint,doors,persons,lug_boot,safety,label
-train_data = pd.read_csv('train.csv', header=None, names=['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety', 'label'])
-test_data = pd.read_csv('test.csv', header=None, names=['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety', 'label'])
+train_data = pd.read_csv('train-car.csv', header=None, names=['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety', 'label'])
+test_data = pd.read_csv('test-car.csv', header=None, names=['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety', 'label'])
 
 # Check the data
 # print(train_data.head(), test_data.head())
@@ -26,7 +26,7 @@ def information_gain(data, attribute):
 
     return overall_entropy - weighted_entropy
 
-def majority_error(data,):
+def majority_error(data):
     labels = data['label']
     majority_label_count = labels.value_counts().max() # Get the majority label
     me_value = 1 - (majority_label_count / len(data))
@@ -43,7 +43,7 @@ def majority_error_split(data, attribute):
 
     return weighted_majority_error
 
-def gini_index(data,):
+def gini_index(data):
     labels = data['label']
     label_counts = labels.value_counts() # Tracks counts how many of each label
     gi_value = 1 - sum((count / len(data)) ** 2 for count in label_counts)

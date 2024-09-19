@@ -2,15 +2,34 @@ import pandas as pd
 import numpy as np
 
 # Load data with column headers: buying,maint,doors,persons,lug_boot,safety,label
-train_data = pd.read_csv('train.csv', header=None, names=['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety', 'label'])
-test_data = pd.read_csv('test.csv', header=None, names=['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety', 'label'])
+train_data = pd.read_csv('train-bank.csv', header=None)
+test_data = pd.read_csv('test-bank.csv', header=None)
+
+columns = [
+    'age', 'job', 'marital', 'education', 'default', 'balance', 'housing', 'loan',
+    'contact', 'day', 'month', 'duration', 'campaign', 'pdays', 'previous', 'poutcome', 'y'
+]
+
+train_data.columns = columns
+test_data.columns = columns
 
 # Check the data
 # print(train_data.head(), test_data.head())
 
+# Convert from categorical 'y' to binary
+train_data['y'] = train_data['y'].map({'yes': 1, 'no': 0})
+test_data['y'] = test_data['y'].map({'yes': 1, 'no': 0})
+
+numerical_attributes = ['age', 'balance', 'day', 'duration', 'campaign', 'pdays', 'previous']
+
+# Function to compute the median split for numerical attributes
+def median_split(data, attribute):
+    median_value = data[attribute].median()
+    return median_value
+
 # Question 2.A
 def entropy(data):
-    labels = data['label'] # Get all labels
+    labels = data['y'] # Get all labels
     label_counts = labels.value_counts() # Count how many of each label
     entropy_value = -sum((count / len(data)) * np.log2(count / len(data)) for count in label_counts)
     return entropy_value
@@ -27,7 +46,7 @@ def information_gain(data, attribute):
     return overall_entropy - weighted_entropy
 
 def majority_error(data,):
-    labels = data['label']
+    labels = data['y']
     majority_label_count = labels.value_counts().max() # Get the majority label
     me_value = 1 - (majority_label_count / len(data))
     return me_value
@@ -44,7 +63,7 @@ def majority_error_split(data, attribute):
     return weighted_majority_error
 
 def gini_index(data,):
-    labels = data['label']
+    labels = data['y']
     label_counts = labels.value_counts() # Tracks counts how many of each label
     gi_value = 1 - sum((count / len(data)) ** 2 for count in label_counts)
     return gi_value
@@ -61,7 +80,9 @@ def gini_index_split(data, attribute):
     return weighted_gini
 
 def best_attribute(data, criteria='information_gain'):
-    attributes = ['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety'] # Non label attributes
+    attributes = ['age', 'job', 'marital', 'education', 'default', 'balance', 'housing', 'loan',
+    'contact', 'day', 'month', 'duration', 'campaign', 'pdays', 'previous', 'poutcome', 'y'
+    ]
     best_attr = None
     best_value = float('-inf') if criteria in ['information_gain'] else float('inf')
 
@@ -92,7 +113,7 @@ class Node:
 
 
 def build_tree(data, max_depth=None, depth=0, criteria='information_gain'):
-    labels = data['label']
+    labels = data['y']
 
     # If all labels are the same
     if len(labels.unique()) == 1:
@@ -131,7 +152,7 @@ def predict(tree, instance):
 def evaluate(tree, test_data):
     correct = 0
     for _, row in test_data.iterrows():
-        if predict(tree, row) == row['label']:
+        if predict(tree, row) == row['y']:
             correct += 1
     proficiency = correct / len(test_data)
     # Return error
