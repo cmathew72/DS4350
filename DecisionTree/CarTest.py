@@ -39,7 +39,7 @@ def gini_index(data):
 
 def best_attribute(data, criteria='information_gain'):
     attributes = ['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety', 'label']
-    best_attribute = None
+    best_attr = None
     best_value = float('-inf')
 
     for attribute in attributes:
@@ -51,10 +51,10 @@ def best_attribute(data, criteria='information_gain'):
             value = gini_index(data)
 
         if value > best_value:
-            best_attribute = attribute
+            best_attr = attribute
             best_value = value
 
-    return best_attribute
+    return best_attr
 
 class Node:
     def __init__(self, attribute=None, label=None):
