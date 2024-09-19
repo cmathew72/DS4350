@@ -26,34 +26,61 @@ def information_gain(data, attribute):
 
     return overall_entropy - weighted_entropy
 
-def majority_error(data):
+def majority_error(data,):
     labels = data['label']
     majority_label_count = labels.value_counts().max() # Get the majority label
     me_value = 1 - (majority_label_count / len(data))
     return me_value
 
-def gini_index(data):
+def majority_error_split(data, attribute):
+    values = data[attribute].unique()
+    weighted_majority_error = 0
+
+    for value in values:
+        subset = data[data[attribute] == value]
+        me_value = majority_error(subset)
+        weighted_majority_error += (len(subset) / len(data)) * me_value
+
+    return weighted_majority_error
+
+def gini_index(data,):
     labels = data['label']
     label_counts = labels.value_counts() # Tracks counts how many of each label
     gi_value = 1 - sum((count / len(data)) ** 2 for count in label_counts)
     return gi_value
 
+def gini_index_split(data, attribute):
+    values = data[attribute].unique()
+    weighted_gini = 0
+
+    for value in values:
+        subset = data[data[attribute] == value]
+        gini_value = gini_index(subset)
+        weighted_gini += (len(subset) / len(data)) * gini_value
+
+    return weighted_gini
+
 def best_attribute(data, criteria='information_gain'):
     attributes = ['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety'] # Non label attributes
     best_attr = None
-    best_value = float('-inf')
+    best_value = float('-inf') if criteria in ['information_gain'] else float('inf')
 
     for attribute in attributes:
         if criteria == 'information_gain':
             value = information_gain(data, attribute)
+            if value > best_value: # Higher is better
+                best_attr = attribute
+                best_value = value
         elif criteria == 'majority_error':
-            value = majority_error(data)
+            value = majority_error_split(data, attribute)
+            if value < best_value: # Lower is better
+                best_attr = attribute
+                best_value = value
         elif criteria == 'gini_index':
-            value = gini_index(data)
-
-        if value > best_value:
-            best_attr = attribute
-            best_value = value
+            value = gini_index_split(data, attribute)
+            if value < best_value: # Lower is better
+                best_attr = attribute
+                best_value = value
 
     return best_attr
 
