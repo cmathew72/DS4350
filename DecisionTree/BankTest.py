@@ -177,3 +177,4 @@ for criteria in criteria_list:
 # Display results
 results_df = pd.DataFrame(results, columns=['criteria', 'depth', 'train_error', 'test_error'])
 print(results_df)
+
