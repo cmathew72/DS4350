@@ -14,6 +14,16 @@ test_data.columns = columns
 # Numerical attributes
 numerical_attributes = ['age', 'balance', 'day', 'duration', 'campaign', 'pdays', 'previous']
 
+# Preprocess data and replace "unknown" with the majority value for categorical attributes
+def preprocess_data(data, columns):
+    for col in columns:
+        if col not in numerical_attributes:  # Only process categorical columns
+            majority_value = data[col].mode()[0]  # Get the most frequent value
+            data[col] = data[col].replace('unknown', majority_value)  # Replace "unknown" with the majority value
+    return data
+
+train_data = preprocess_data(train_data, numerical_attributes)
+test_data = preprocess_data(test_data, numerical_attributes)
 
 # Step 1: Define updated functions
 def entropy(data):
@@ -21,7 +31,6 @@ def entropy(data):
     label_counts = labels.value_counts()
     entropy_value = -sum((count / len(data)) * np.log2(count / len(data)) for count in label_counts)
     return entropy_value
-
 
 def information_gain(data, attribute):
     overall_entropy = entropy(data)
@@ -39,7 +48,6 @@ def information_gain(data, attribute):
 
     return overall_entropy - weighted_entropy
 
-
 def majority_error(data):
     if len(data) == 0:
         return 0
@@ -47,7 +55,6 @@ def majority_error(data):
     majority_label_count = labels.value_counts().max()
     me_value = 1 - (majority_label_count / len(data))
     return me_value
-
 
 def majority_error_split(data, attribute):
     if attribute in numerical_attributes:
@@ -71,29 +78,25 @@ def majority_error_split(data, attribute):
 
     return weighted_me
 
-
 def gini_index(data):
     labels = data['y']
     label_counts = labels.value_counts()
     gi_value = 1 - sum((count / len(data)) ** 2 for count in label_counts)
     return gi_value
 
-
 def gini_index_split(data, attribute):
     if attribute in numerical_attributes:
         median_value = data[attribute].median()
         subset1 = data[data[attribute] <= median_value]
         subset2 = data[data[attribute] > median_value]
+        if len(subset1) == 0 or len(subset2) == 0:
+            return 0
         weighted_gi = (len(subset1) / len(data)) * gini_index(subset1) + (len(subset2) / len(data)) * gini_index(
             subset2)
     else:
         values = data[attribute].unique()
-        weighted_gi = sum(
-            (len(data[data[attribute] == value]) / len(data)) * gini_index(data[data[attribute] == value]) for value in
-            values)
-
+        weighted_gi = sum((len(data[data[attribute] == value]) / len(data)) * gini_index(data[data[attribute] == value]) for value in values)
     return weighted_gi
-
 
 def best_attribute(data, criteria='information_gain'):
     attributes = [col for col in data.columns if col != 'y']
