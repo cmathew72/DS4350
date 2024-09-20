@@ -1,169 +1,191 @@
 import pandas as pd
 import numpy as np
 
-# Load data with column headers: buying,maint,doors,persons,lug_boot,safety,label
+# Load data
 train_data = pd.read_csv('train-bank.csv', header=None)
 test_data = pd.read_csv('test-bank.csv', header=None)
 
-columns = [
-    'age', 'job', 'marital', 'education', 'default', 'balance', 'housing', 'loan',
-    'contact', 'day', 'month', 'duration', 'campaign', 'pdays', 'previous', 'poutcome', 'y'
-]
-
+# Attribute names from 'data-desc.txt'
+columns = ['age', 'job', 'marital', 'education', 'default', 'balance', 'housing', 'loan',
+           'contact', 'day', 'month', 'duration', 'campaign', 'pdays', 'previous', 'poutcome', 'y']
 train_data.columns = columns
 test_data.columns = columns
 
-# Check the data
-# print(train_data.head(), test_data.head())
-
-# Convert from categorical 'y' to binary
-train_data['y'] = train_data['y'].map({'yes': 1, 'no': 0})
-test_data['y'] = test_data['y'].map({'yes': 1, 'no': 0})
-
+# Numerical attributes
 numerical_attributes = ['age', 'balance', 'day', 'duration', 'campaign', 'pdays', 'previous']
 
-# Function to compute the median split for numerical attributes
-def median_split(data, attribute):
-    median_value = data[attribute].median()
-    return median_value
 
-# Question 2.A
+# Step 1: Define updated functions
 def entropy(data):
-    labels = data['y'] # Get all labels
-    label_counts = labels.value_counts() # Count how many of each label
+    labels = data['y']
+    label_counts = labels.value_counts()
     entropy_value = -sum((count / len(data)) * np.log2(count / len(data)) for count in label_counts)
     return entropy_value
 
+
 def information_gain(data, attribute):
     overall_entropy = entropy(data)
-    values = data[attribute].unique() # Get all unique values
-    weighted_entropy = 0
-
-    for value in values:
-        subset = data[data[attribute] == value]
-        weighted_entropy += (len(subset) / len(data)) * entropy(subset)
+    if attribute in numerical_attributes:
+        # Split based on median for numerical attributes
+        median_value = data[attribute].median()
+        subset1 = data[data[attribute] <= median_value]
+        subset2 = data[data[attribute] > median_value]
+        weighted_entropy = (len(subset1) / len(data)) * entropy(subset1) + (len(subset2) / len(data)) * entropy(subset2)
+    else:
+        values = data[attribute].unique()
+        weighted_entropy = sum(
+            (len(data[data[attribute] == value]) / len(data)) * entropy(data[data[attribute] == value]) for value in
+            values)
 
     return overall_entropy - weighted_entropy
 
-def majority_error(data,):
+
+def majority_error(data):
+    if len(data) == 0:
+        return 0
     labels = data['y']
-    majority_label_count = labels.value_counts().max() # Get the majority label
+    majority_label_count = labels.value_counts().max()
     me_value = 1 - (majority_label_count / len(data))
     return me_value
 
+
 def majority_error_split(data, attribute):
-    values = data[attribute].unique()
-    weighted_majority_error = 0
+    if attribute in numerical_attributes:
+        median_value = data[attribute].median()
+        subset1 = data[data[attribute] <= median_value]
+        subset2 = data[data[attribute] > median_value]
+        # Check for empty subsets
+        if len(subset1) == 0 or len(subset2) == 0:
+            return 0
 
-    for value in values:
-        subset = data[data[attribute] == value]
-        me_value = majority_error(subset)
-        weighted_majority_error += (len(subset) / len(data)) * me_value
+        weighted_me = (len(subset1) / len(data)) * majority_error(subset1) + (
+                    len(subset2) / len(data)) * majority_error(subset2)
+    else:
+        values = data[attribute].unique()
+        weighted_me = 0
+        for value in values:
+            subset = data[data[attribute] == value]
+            if len(subset) == 0:
+                continue  # Skip empty subsets
+            weighted_me += (len(subset) / len(data)) * majority_error(subset)
 
-    return weighted_majority_error
+    return weighted_me
 
-def gini_index(data,):
+
+def gini_index(data):
     labels = data['y']
-    label_counts = labels.value_counts() # Tracks counts how many of each label
+    label_counts = labels.value_counts()
     gi_value = 1 - sum((count / len(data)) ** 2 for count in label_counts)
     return gi_value
 
+
 def gini_index_split(data, attribute):
-    values = data[attribute].unique()
-    weighted_gini = 0
+    if attribute in numerical_attributes:
+        median_value = data[attribute].median()
+        subset1 = data[data[attribute] <= median_value]
+        subset2 = data[data[attribute] > median_value]
+        weighted_gi = (len(subset1) / len(data)) * gini_index(subset1) + (len(subset2) / len(data)) * gini_index(
+            subset2)
+    else:
+        values = data[attribute].unique()
+        weighted_gi = sum(
+            (len(data[data[attribute] == value]) / len(data)) * gini_index(data[data[attribute] == value]) for value in
+            values)
 
-    for value in values:
-        subset = data[data[attribute] == value]
-        gini_value = gini_index(subset)
-        weighted_gini += (len(subset) / len(data)) * gini_value
+    return weighted_gi
 
-    return weighted_gini
 
 def best_attribute(data, criteria='information_gain'):
-    attributes = ['age', 'job', 'marital', 'education', 'default', 'balance', 'housing', 'loan',
-    'contact', 'day', 'month', 'duration', 'campaign', 'pdays', 'previous', 'poutcome', 'y'
-    ]
+    attributes = [col for col in data.columns if col != 'y']
     best_attr = None
-    best_value = float('-inf') if criteria in ['information_gain'] else float('inf')
+    best_value = float('-inf') if criteria == 'information_gain' else float('inf')
 
     for attribute in attributes:
         if criteria == 'information_gain':
             value = information_gain(data, attribute)
-            if value > best_value: # Higher is better
+            if value > best_value:
                 best_attr = attribute
                 best_value = value
         elif criteria == 'majority_error':
             value = majority_error_split(data, attribute)
-            if value < best_value: # Lower is better
+            if value < best_value:
                 best_attr = attribute
                 best_value = value
         elif criteria == 'gini_index':
             value = gini_index_split(data, attribute)
-            if value < best_value: # Lower is better
+            if value < best_value:
                 best_attr = attribute
                 best_value = value
 
     return best_attr
 
 class Node:
-    def __init__(self, attribute=None, label=None):
-        self.attribute = attribute # Defines the attribute to split on
-        self.label = label # Defines if the label is a leaf node
-        self.children = {} # Defines the children
-
+    def __init__(self, attribute=None, label=None, threshold=None):
+        self.attribute = attribute
+        self.label = label
+        self.threshold = threshold  # For numerical splits
+        self.children = {}
 
 def build_tree(data, max_depth=None, depth=0, criteria='information_gain'):
     labels = data['y']
-
-    # If all labels are the same
     if len(labels.unique()) == 1:
         return Node(label=labels.iloc[0])
-    # If tree reaches max depth or greater, return majority label
-    if max_depth is not None and depth >= max_depth:
-        return Node(label=labels.mode()[0])
-    # Split on best attribute
-    best_attr = best_attribute(data, criteria)
-    # If no attribute, return majority label
-    if best_attr is None:
-        return Node(label=labels.mode()[0])
-
-    root = Node(attribute=best_attr)
-
-    for value in data[best_attr].unique():
-        subset = data[data[best_attr] == value]
-        if len(subset) == 0:
-            # If no more data, return majority label
-            root.children[value] = Node(label=labels.mode()[0])
+    if max_depth is not None and (depth >= max_depth or len(data) == 0):
+        if not labels.mode().empty:  # Check if mode() returns a non-empty series
+            return Node(label=labels.mode()[0])
         else:
-            root.children[value] = build_tree(subset, max_depth, depth+1, criteria) # Recursively split the data util max depth is reached
+            return Node(label="none")
+
+    best_attr = best_attribute(data, criteria)
+    if best_attr is None:
+        if not labels.mode().empty:
+            return Node(label=labels.mode()[0])
+        else:
+            return Node(label="none")
+
+    if best_attr in numerical_attributes:
+        # Numerical split based on median
+        threshold = data[best_attr].median()
+        root = Node(attribute=best_attr, threshold=threshold)
+        subset1 = data[data[best_attr] <= threshold]
+        subset2 = data[data[best_attr] > threshold]
+        root.children['<='] = build_tree(subset1, max_depth, depth + 1, criteria)
+        root.children['>'] = build_tree(subset2, max_depth, depth + 1, criteria)
+    else:
+        root = Node(attribute=best_attr)
+        for value in data[best_attr].unique():
+            subset = data[data[best_attr] == value]
+            root.children[value] = build_tree(subset, max_depth, depth + 1, criteria)
 
     return root
 
+
 def predict(tree, instance):
-    # If is a leaf node, return
     if tree.label is not None:
         return tree.label
-    attr_value = instance[tree.attribute]
-    if attr_value not in tree.children:
+    if tree.attribute is None:
         return None
-    return predict(tree.children[attr_value], instance)
+    if tree.attribute in numerical_attributes:
+        if instance[tree.attribute] <= tree.threshold:
+            return predict(tree.children['<='], instance)
+        else:
+            return predict(tree.children['>'], instance)
+    else:
+        attr_value = instance[tree.attribute]
+        return predict(tree.children.get(attr_value, Node(label=None)), instance)
 
-# Test the new tree
+
 def evaluate(tree, test_data):
     correct = 0
     for _, row in test_data.iterrows():
         if predict(tree, row) == row['y']:
             correct += 1
     proficiency = correct / len(test_data)
-    # Return error
     return 1 - proficiency
 
-# Test predictions
-# print(evaluate(build_tree(train_data), test_data))
 
-# Question 2.B
-# Depth from 1 to 6
-depth_range = range(1, 7)
+# Run the evaluation for depths from 1 to 16
+depth_range = range(1, 17)
 criteria_list = ['information_gain', 'majority_error', 'gini_index']
 results = []
 
@@ -174,7 +196,6 @@ for criteria in criteria_list:
         test_error = evaluate(tree, test_data)
         results.append([criteria, depth, train_error, test_error])
 
-# Display results
+# Display the results
 results_df = pd.DataFrame(results, columns=['criteria', 'depth', 'train_error', 'test_error'])
 print(results_df)
-

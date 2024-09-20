@@ -63,7 +63,7 @@ def gini_index_split(data, attribute):
 def best_attribute(data, criteria='information_gain'):
     attributes = ['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety'] # Non label attributes
     best_attr = None
-    best_value = float('-inf') if criteria == ['information_gain'] else float('inf')
+    best_value = float('-inf') if criteria == 'information_gain' else float('inf')
 
     for attribute in attributes:
         if criteria == 'information_gain':
@@ -93,7 +93,6 @@ class Node:
 
 def build_tree(data, max_depth=None, depth=0, criteria='information_gain'):
     labels = data['label']
-
     # If all labels are the same
     if len(labels.unique()) == 1:
         return Node(label=labels.iloc[0])
