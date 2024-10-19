@@ -1,16 +1,18 @@
 # DS4350
 This is a machine learning library develpoed by Cody Mathews for CS5350/6350 in University of Utah.
 
-This project includes scripts for training and evaluating decision trees on the Car Evaluation and Bank Marketing datasets using various splitting criteria. The scripts are designed to run in a Python environment with dependencies such as pandas and numpy.
+This project includes scripts for training and evaluating decision trees on the Car Evaluation, Bank Marketing, and Concrete Slump Test datasets using various splitting criteria. The scripts are designed to run in a Python environment with dependencies such as pandas and numpy.
 
 Setup
-Ensure all files (train-car.csv, test-car.csv, train-bank.csv, test-bank.csv, CarTest.py, BankTest.py) are located in the same directory or update the file paths as needed in the scripts.
+Ensure all files (train-car.csv, test-car.csv, train-bank.csv, test-bank.csv, train-concrete.csv, test-concrete.csv, CarTest.py, BankTest.py, BaggedTrees.py, DecisionStumps,py, RandomForest.py, BGD.py, SGD.py) are located in the same directory or update the file paths as needed in the scripts.
 Install required libraries:
 pip install pandas numpy
+pip install scikit-learn
 
 How to Run
 For Car Evaluation Dataset: Run CarTest.py
-For Bank Marketing Dataset: Run BankTest.py
+For Bank Marketing Dataset: Run BankTest.py, BaggedTrees.py, DecisionStumps,py, RandomForest.py
+For Concrete Sllump Test Dataset: Run BGD.py, SGD.py
 
 Setting Parameters
 The scripts allow for customization of the following parameters:
