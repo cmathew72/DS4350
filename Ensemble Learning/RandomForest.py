@@ -18,7 +18,6 @@ test_data.columns = columns
 # Numerical attributes
 numerical_attributes = ['age', 'balance', 'day', 'duration', 'campaign', 'pdays', 'previous']
 
-
 def preprocess_data(data, target='y'):
     # Replace 'unknown' with the most frequent value in categorical columns
     for col in data.columns:
@@ -40,7 +39,6 @@ X_train = train_data.drop('y', axis=1)
 y_train = train_data['y'].apply(lambda x: 1 if x == 'yes' else 0)  # Convert to binary 0/1
 X_test = test_data.drop('y', axis=1)
 y_test = test_data['y'].apply(lambda x: 1 if x == 'yes' else 0)
-
 
 # Random Forest Implementation
 class RandomForest:
@@ -65,7 +63,6 @@ class RandomForest:
     def predict(self, X):
         tree_preds = np.array([tree.predict(X) for tree in self.trees])
         return np.round(np.mean(tree_preds, axis=0))
-
 
 # Varying number of trees and feature subsets
 n_trees_range = range(1, 501)

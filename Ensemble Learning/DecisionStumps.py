@@ -8,7 +8,6 @@ columns = ['age', 'job', 'marital', 'education', 'default', 'balance', 'housing'
            'contact', 'day', 'month', 'duration', 'campaign', 'pdays', 'previous', 'poutcome', 'y']
 numerical_attributes = ['age', 'balance', 'day', 'duration', 'campaign', 'pdays', 'previous']
 
-
 # Preprocess data to replace "unknown" and convert numerical features
 def preprocess_data(data):
     # Replace "unknown" with the majority value for categorical attributes
@@ -28,7 +27,6 @@ def preprocess_data(data):
 
     return data
 
-
 # Load and rename columns for both train and test datasets
 train_df = pd.read_csv('train-bank-1.csv', header=None)
 test_df = pd.read_csv('test-bank-1.csv', header=None)
@@ -43,8 +41,7 @@ test_df = preprocess_data(test_df)
 X_train, y_train = train_df.drop('y', axis=1).values, train_df['y'].values
 X_test, y_test = test_df.drop('y', axis=1).values, test_df['y'].values
 
-
-# Step 2: Implement Decision Stump with Information Gain
+# Implement Decision Stump with Information Gain
 def decision_stump(X, y, sample_weights):
     n_samples, n_features = X.shape
     best_feature, best_threshold, best_gain = None, None, -1
@@ -64,8 +61,7 @@ def decision_stump(X, y, sample_weights):
 
     return best_feature, best_threshold, best_pred, best_gain
 
-
-# Step 3: Implement AdaBoost Algorithm
+# Implement AdaBoost Algorithm
 def adaboost(X, y, X_test, y_test, T=500):
     n_samples, n_features = X.shape
     sample_weights = np.full(n_samples, 1 / n_samples)
@@ -97,8 +93,7 @@ def adaboost(X, y, X_test, y_test, T=500):
 
     return errors_train, errors_test
 
-
-# Step 4: Plot Training and Test Errors
+# Plot Training and Test Errors
 def plot_error_over_iterations(errors_train, errors_test):
     # Figure 1: Overall error over AdaBoost iterations
     plt.figure(figsize=(12, 6))
@@ -110,7 +105,6 @@ def plot_error_over_iterations(errors_train, errors_test):
     plt.legend()
     plt.show()
 
-
 def plot_error_per_stump(errors_train, errors_test):
     # Figure 2: Error for each stump in AdaBoost
     plt.figure(figsize=(12, 6))
@@ -121,7 +115,6 @@ def plot_error_per_stump(errors_train, errors_test):
     plt.title('Training and Test Error for Each Decision Stump')
     plt.legend()
     plt.show()
-
 
 # Train AdaBoost and Plot Errors
 errors_train, errors_test = adaboost(X_train, y_train, X_test, y_test)
