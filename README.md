@@ -1,7 +1,10 @@
 # DS4350
 This is a machine learning library developed by Cody Mathews for CS5350/6350 at the University of Utah.
 
-This project includes scripts for training and evaluating decision trees on the **Car Evaluation** and **Bank Marketing** datasets, as well as implementations of ensemble learning algorithms (AdaBoost, Bagging, Random Forest) and linear regression methods (LMS with batch-gradient and stochastic gradient). The scripts are designed to run in a Python environment with dependencies such as `pandas`, `numpy`, and `matplotlib`.
+This project includes scripts for training and evaluating decision trees on the **Car Evaluation** and
+**Bank Marketing**datasets, as well as implementations of ensemble learning algorithms (AdaBoost, Bagging,
+Random Forest) and linear regression methods (LMS with batch-gradient and stochastic gradient). The scripts are
+designed to run in a Python environment with dependencies such as `pandas`, `numpy`, and `matplotlib`.
 
 ---
 
@@ -11,7 +14,9 @@ This project includes scripts for training and evaluating decision trees on the 
    - **Ensemble Learning**: Place `RandomForest.py`, `BaggedTrees.py`, and `DecisionStumps.py` here.
    - **Linear Regression**: Place `SGD.py` and `BGD.py` here.
    - **Perceptron**: Create a new folder for Perceptron-related implementations.
-   - Ensure all relevant dataset files (e.g., `train-car.csv`, `test-car.csv`, `train-bank.csv`, `test-bank.csv`, `train-concrete.csv`, `test-concrete.csv`) are located in the appropriate directories, or update file paths in the scripts as needed.
+   - Ensure all relevant dataset files (e.g., `train-car.csv`, `test-car.csv`, `train-bank.csv`, `test-bank.csv`,
+   `train-concrete.csv`, `test-concrete.csv`) are located in the appropriate directories, or update file paths in the
+   scripts as needed.
    
 2. **Install required libraries**:
    ```bash
@@ -29,8 +34,12 @@ This project includes scripts for training and evaluating decision trees on the 
 
 ### Linear Regression (Least-Mean-Square (LMS))
 - **Stochastic Gradient Descent**: Run `SGD.py`
-- **Batch Gradient Descent**: Run `BGD.py`
+- **Batch Gradient Descent**: Run `BGD.py'
 
+### Perceptron Algorithm
+- **Standard Perceptron**: Run `Perceptron.py` to train and test using the standard Perceptron algorithm.
+- **Voted Perceptron**: Run `Perceptron.py` to train and test using the voted Perceptron algorithm.
+- **Average Perceptron**: Run `Perceptron.py` to train and test using the average Perceptron algorithm.
 ---
 
 ## Setting Parameters
@@ -57,6 +66,15 @@ The scripts allow for customization of the following parameters:
 - **Batch Gradient Descent**:
   - Adjust `learning_rate`, `tolerance`, and `max_iters` in `BGD.py` for convergence and learning rate tuning.
 
+### Perceptron Algorithms
+- **Standard Perceptron**:
+  - Set the number of epochs in `Perceptron.py` to specify the number of training iterations.
+
+- **Voted Perceptron**
+  - The number of `epochs` can be adjusted in `Perceptron.py`.
+
+- **Average Perceptron**
+  - Modify the number of `epochs` in `Perceptron.py`.
 ---
 
 ## Output
@@ -64,3 +82,7 @@ The scripts allow for customization of the following parameters:
 - **Decision Trees**: The script outputs a table with **training and testing errors** for each combination of splitting criterion and tree depth, allowing assessment of model performance and optimal parameter selection.
 - **Ensemble Learning**: Each ensemble method outputs error rates across varying parameters (number of trees, maximum features) for both training and test sets.
 - **Linear Regression (LMS)**: The LMS scripts plot the cost function's progress over iterations and display final weights, bias term, and cost on test data.
+- **Perceptron Algorithms**:
+  - **Standard Perceptron**: Outputs the learned weight vector and the average prediction error on the test set.
+  - **Voted Perceptron**: Displays the distinct weight vectors with their counts and the average prediction error.
+  - **Average Perceptron**: Outputs the average weight vector and the average prediction error.
