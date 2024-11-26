@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 train_data = pd.read_csv('train-bank-1.csv', header=None)
 test_data = pd.read_csv('test-bank-1.csv', header=None)
 
-# Attribute names from 'data-desc-bank-1.txt'
+# Attribute names from 'data-desc-bank-note-bank-1.txt'
 columns = ['age', 'job', 'marital', 'education', 'default', 'balance', 'housing', 'loan',
            'contact', 'day', 'month', 'duration', 'campaign', 'pdays', 'previous', 'poutcome', 'y']
 train_data.columns = columns

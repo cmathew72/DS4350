@@ -5,7 +5,7 @@ import numpy as np
 train_data = pd.read_csv('train-bank.csv', header=None)
 test_data = pd.read_csv('test-bank.csv', header=None)
 
-# Attribute names from 'data-desc.txt'
+# Attribute names from 'data-desc-bank-note.txt'
 columns = ['age', 'job', 'marital', 'education', 'default', 'balance', 'housing', 'loan',
            'contact', 'day', 'month', 'duration', 'campaign', 'pdays', 'previous', 'poutcome', 'y']
 train_data.columns = columns
