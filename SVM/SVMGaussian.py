@@ -74,6 +74,11 @@ def predict(X_train, y_train, X_test, alpha, gamma, bias):
     return np.array(y_pred)
 
 
+# Compute support vector overlap
+def compute_overlap(sv1, sv2):
+    return len(np.intersect1d(sv1, sv2))
+
+
 # Main Function
 def main():
     # Generate synthetic dataset
@@ -97,6 +102,8 @@ def main():
     best_C = None
     best_accuracy = 0
 
+    support_vectors_data = {}
+
     # Grid Search
     for gamma in gammas:
         for C in C_values:
@@ -104,7 +111,7 @@ def main():
             alpha, K = solve_dual_svm(X_train, y_train, C, gamma)
 
             # Compute bias
-            support_vectors = (alpha > 1e-5)
+            support_vectors = np.where(alpha > 1e-5)[0]
             support_alpha = alpha[support_vectors]
             support_y = y_train[support_vectors]
             support_K = K[support_vectors][:, support_vectors]
@@ -123,6 +130,9 @@ def main():
 
             print(f"Training Accuracy: {train_accuracy}, Test Accuracy: {test_accuracy}")
 
+            # Store number of support vectors
+            support_vectors_data[(gamma, C)] = support_vectors
+
             # Update best combination
             if test_accuracy > best_accuracy:
                 best_gamma = gamma
@@ -130,6 +140,18 @@ def main():
                 best_accuracy = test_accuracy
 
     print(f"Best Gamma: {best_gamma}, Best C: {best_C}, Best Test Accuracy: {best_accuracy}")
+
+    # Compute overlaps for C=500/873
+    C_fixed = 500 / 873
+    print(f"\nOverlaps in support vectors for C={C_fixed}:")
+    prev_sv = None
+    for gamma in gammas:
+        current_sv = support_vectors_data[(gamma, C_fixed)]
+        if prev_sv is not None:
+            overlap = compute_overlap(prev_sv, current_sv)
+            print(f"Overlap between gamma={prev_gamma} and gamma={gamma}: {overlap}")
+        prev_sv = current_sv
+        prev_gamma = gamma
 
 
 if __name__ == "__main__":
