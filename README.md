@@ -4,7 +4,7 @@ This is a machine learning library developed by Cody Mathews for CS5350/6350 at 
 This project includes scripts for training and evaluating decision trees on the **Car Evaluation** and
 **Bank Marketing**datasets, as well as implementations of ensemble learning algorithms (AdaBoost, Bagging,
 Random Forest) and linear regression methods (LMS with batch-gradient and stochastic gradient). The scripts are
-designed to run in a Python environment with dependencies such as `pandas`, `numpy`, and `matplotlib`.
+designed to run in a Python environment with dependencies such as `pandas`, `numpy`, `matplotlib`, and `scipy`.
 
 ---
 
