@@ -15,6 +15,8 @@ designed to run in a Python environment with dependencies such as `pandas`, `num
    - **Linear Regression**: Place `SGD.py` and `BGD.py` here.
    - **Perceptron**: Create a new folder for Perceptron-related implementations.
    - **SVM**: Place `SVM.py` here for SVM implementations (primal and dual).
+   - **Neural Networks**: Place your neural network implementation here.
+   - **Logistic Regression**: (Folder currently empty; to be updated after Logistic Regression implementation.)
    - Ensure all relevant dataset files (e.g., `train-car.csv`, `test-car.csv`, `train-bank.csv`, `test-bank.csv`,
    `train-concrete.csv`, `test-concrete.csv`) are located in the appropriate directories, or update file paths in the
    scripts as needed.
@@ -22,6 +24,7 @@ designed to run in a Python environment with dependencies such as `pandas`, `num
 2. **Install required libraries**:
    ```bash
    pip install pandas numpy matplotlib
+
 ## How to Run
 
 ### Decision Trees for Car Evaluation and Bank Marketing Datasets
@@ -49,9 +52,18 @@ designed to run in a Python environment with dependencies such as `pandas`, `num
 - **Dual Domain (Quadratic Programming)**:
   - Run `SVM.py` with the dual mode enabled.
   - Uses `scipy.optimize.minimize` to solve the dual problem.
-  - Outputs weights (\(w\)), bias (\(b\)), and training/testing errors.
 
----
+### Neural Networks
+- **Part A: Manual Initialization and Gradients**:
+  - Run `NeuralNetworksPartA.py` directly to compute forward and backward propagation for a predefined dataset and weights.
+- **Part B: Training Neural Networks with Gaussian Initialization**:
+  - Run `NeuralNetworksPartB.py` to train a neural network using Gaussian-initialized weights, a learning rate schedule,
+  and stochastic gradient descent.
+  - Parameters are training and test datasets that are specified within the script.
+- **Part C: Training Neural Networks with Zero Initialization**:
+  - Run `NeuralNetworksPartC.py` to train a neural network using zero-initialized weights and biases, a learning rate
+  schedule, and stochastic gradient descent.
+  - Parameters are the same as in Part B.
 
 ## Setting Parameters
 
@@ -117,3 +129,13 @@ The scripts allow for customization of the following parameters:
   - **Dual Domain**:
     - Outputs Lagrange multipliers (\(\alpha\)), weights (\(w\)), bias (\(b\)), and errors.
     - Compares primal and dual solutions to ensure correctness.
+- **Neural Networks**:
+  - **Part A: Manual Initialization and Gradients**:
+    - Outputs prediction and loss from the forward pass
+    - Outputs gradients of weights and biases computed during the backward pass.
+  - **Part B: Training Neural Networks with Gaussian Initialization**:
+    - Outputs final training and test errors for each hidden layer width.
+    - Outputs loss plots over training epochs.
+  - **Part C: Training Neural Networks with Zero Initialization**:
+    - Outputs final training and test errors for each hidden layer width.
+    - Outputs loss plots over training epochs, labeled as "Zero Initialization."
